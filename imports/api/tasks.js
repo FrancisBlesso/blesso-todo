@@ -1,24 +1,39 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
+import SimpleSchema from 'simpl-schema';
 
 export const Tasks = new Mongo.Collection('tasks');
+
+Tasks.schema = new SimpleSchema({
+  _id: {type: String},
+  tasklistId: {type: String},
+  //tasklistId: {type: String, regEx: SimpleSchema.RegEx.Id},
+  text: {type: String},
+  checked: {type: Boolean, defaultValue: false},
+  private: {type: Boolean, defaultValue: false},
+  ownerId: {type: String, regEx: SimpleSchema.RegEx.Id},
+  username: {type: String},
+  createdAt: {type: Date},
+});
+Tasks.attachSchema(Tasks.schema);
 
 if (Meteor.isServer)  {
   // This code only runs on the server
   // Only publish tasks that are public or belong to the current user
   Meteor.publish('tasks', function tasksPublication() {
     return Tasks.find({
-//      $or: [
-//        { private: { $ne: true } },
-//        { owner: this.userId },
-//      ],
+      $or: [
+        { private: { $ne: true } },
+        { ownerId: this.userId },
+      ],
     });
   });
 }
 Meteor.methods({
-  'tasks.insert'(text) {
+  'tasks.insert'(text, tasklistId) {
     check(text, String);
+    check(tasklistId, String);
     
     // Make sure the user is logged in before inserting a task
     if (! this.userId) {
@@ -27,8 +42,9 @@ Meteor.methods({
     
     Tasks.insert({
       text,
+      tasklistId,
       createdAt: new Date(),
-      owner: this.userId,
+      ownerId: this.userId,
       username: Meteor.users.findOne(this.userId).username,
     });
   },
@@ -37,7 +53,7 @@ Meteor.methods({
 
     const task = Tasks.findOne(taskId);
 
-    if (task.owner !== this.userId) {
+    if (task.ownerId !== this.userId) {
       // If the task is private, make sure only the owner can delete it
       throw new Meteor.Error('not-authorized');
     }
@@ -49,7 +65,7 @@ Meteor.methods({
     check(setChecked, Boolean);
     
     const task = Tasks.findOne(taskId);
-    if (task.private && task.owner !== this.userId) {
+    if (task.private && task.ownerId !== this.userId) {
       // If the task is private, make sure only the owner can check it off
       throw new Meteor.Error('not-authorized');
     }
@@ -63,7 +79,7 @@ Meteor.methods({
     const task = Tasks.findOne(taskId);
     
     // Make sure only the task owner can make a task private
-    if (task.owner !== this.userId) {
+    if (task.ownerId !== this.userId) {
       throw new Meteor.Error('not-authorized');
     }
     

@@ -24,7 +24,8 @@ class App extends Component {
     // Find the text field via the React ref
     const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
     
-    Meteor.call('tasks.insert', text);
+    //TODO use correct tasklist id
+    Meteor.call('tasks.insert', text, "1");
     
     // Clear form
     ReactDOM.findDOMNode(this.refs.textInput).value = '';
@@ -41,7 +42,7 @@ class App extends Component {
     }
     return filteredTasks.map((task) => {
         const currentUserId = this.props.currentUser && this.props.currentUser._id;
-        const showPrivateButton = task.owner === currentUserId;
+        const showPrivateButton = task.ownerId === currentUserId;
         const showDeleteButton = showPrivateButton;
         return (
           <Task 

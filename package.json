@@ -2,7 +2,8 @@
   "name": "blesso-todo",
   "private": true,
   "scripts": {
-    "start": "meteor run"
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package dispatch:mocha-phantomjs"
   },
   "dependencies": {
     "babel-runtime": "^6.18.0",
@@ -10,6 +11,7 @@
     "meteor-node-stubs": "~0.2.0",
     "react": "^15.4.2",
     "react-addons-pure-render-mixin": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "simpl-schema": "^0.1.1"
   }
 }
