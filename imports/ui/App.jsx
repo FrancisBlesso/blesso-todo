@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+import {Grid, Row, Col, Panel, ListGroup, Checkbox} from 'react-bootstrap';
 
 import { Tasks } from '../api/tasks.js';
 
@@ -61,15 +62,12 @@ class App extends Component {
         <header>
     	  <h1>Todo List ({this.props.incompleteCount})</h1>
             <label className="hide-completed" >
-              <input
-                type="checkbox" 
-                readOnly
+    	      <Checkbox inline="true"
                 checked={this.state.hideCompleted}
                 onClick={this.toggleHideCompleted.bind(this)}
               />
               Hide Completed Tasks
             </label>
-              
             <AccountsUIWrapper />
             { this.props.currentUser ? 
     	  <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
@@ -80,10 +78,16 @@ class App extends Component {
               />
           </form> : ''
             }
-    	</header>
-    	<ul>
+      </header>
+        <Grid fluid="true">	    
+    	  <Row>
+    	    <Panel collapsible defaultExpanded header="First List">
+              <ListGroup fill>
     	  {this.renderTasks()}
-    	</ul>
+    	      </ListGroup>
+    	    </Panel>
+    	  </Row>
+        </Grid>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Meteor } from 'meteor/meteor';
 import classnames from 'classnames';
+import {Button, Col, ListGroupItem, Checkbox} from 'react-bootstrap';
 
 // Task component - represents a single todo item
 export default class Task extends Component {
@@ -24,28 +25,33 @@ export default class Task extends Component {
         checked: this.props.task.checked,
         private: this.props.task.private,
     });
+    const disabled = this.props.task.checked ? 'disabled' : '';
     return (
-      <li className={taskClassName}>
-        { this.props.showDeleteButton ? (
-            <button className="delete" onClick={this.deleteThisTask.bind(this)}>
-                &times;
-            </button>
-        ) : '' }
-        <input
-          type="checkbox"
-          readOnly
+    <div className={taskClassName}>
+      <ListGroupItem disabled={this.props.task.checked} >
+        <Checkbox inline="true"
           checked={this.props.task.checked}
           onClick={this.toggleChecked.bind(this)}
         />
+        &nbsp;
         { this.props.showPrivateButton ? (
-          <button className = "toggle-private" onClick={this.togglePrivate.bind(this)}>
-            { this.props.task.private ? 'Private' : 'Public'}
-          </button>
+            <Button bsStyle="primary" bsSize="small" onClick={this.togglePrivate.bind(this)}>
+              { this.props.task.private ? 'Private' : 'Public'}
+            </Button>
         ) : '' }
+
+        &nbsp; 
         <span className="text">
           <strong>{this.props.task.username}</strong>: {this.props.task.text}
         </span>
-      </li>
+        &nbsp;
+        { this.props.showDeleteButton ? (
+            <Button  bsStyle="danger" bsSize="xsmall" className="delete" onClick={this.deleteThisTask.bind(this)}>
+                &times;
+            </Button>
+        ) : '' }
+      </ListGroupItem>
+    </div>
     );
   }
 }
