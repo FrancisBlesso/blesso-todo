@@ -25,7 +25,7 @@ class App extends Component {
     // Find the text field via the React ref
     const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
     
-    //TODO use correct tasklist id
+    //TODO use correct checklist id
     Meteor.call('tasks.insert', text, "1");
     
     // Clear form

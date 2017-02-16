@@ -7,8 +7,8 @@ export const Tasks = new Mongo.Collection('tasks');
 
 Tasks.schema = new SimpleSchema({
   _id: {type: String},
-  tasklistId: {type: String},
-  //tasklistId: {type: String, regEx: SimpleSchema.RegEx.Id},
+  checklistId: {type: String},
+  //checklistId: {type: String, regEx: SimpleSchema.RegEx.Id},
   text: {type: String},
   checked: {type: Boolean, defaultValue: false},
   private: {type: Boolean, defaultValue: false},
@@ -31,9 +31,9 @@ if (Meteor.isServer)  {
   });
 }
 Meteor.methods({
-  'tasks.insert'(text, tasklistId) {
+  'tasks.insert'(text, checklistId) {
     check(text, String);
-    check(tasklistId, String);
+    check(checklistId, String);
     
     // Make sure the user is logged in before inserting a task
     if (! this.userId) {
@@ -42,7 +42,7 @@ Meteor.methods({
     
     Tasks.insert({
       text,
-      tasklistId,
+      checklistId,
       createdAt: new Date(),
       ownerId: this.userId,
       username: Meteor.users.findOne(this.userId).username,

@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 
-export const TaskLists = new Mongo.Collection('tasklists');
+export const TaskLists = new Mongo.Collection('checklists');
 
 if (Meteor.isServer)  {
   // This code only runs on the server
   // Only publish tasks that are public or belong to the current user
-  Meteor.publish('tasklists', function tasksPublication() {
+  Meteor.publish('checklists', function tasksPublication() {
     return TaskLists.find({
 //      $or: [
 //        { private: { $ne: true } },
@@ -17,7 +17,7 @@ if (Meteor.isServer)  {
   });
 }
 Meteor.methods({
-  'tasklists.insert'(text) {
+  'checklists.insert'(text) {
     check(text, String);
     
     // Make sure the user is logged in before inserting a task
@@ -32,7 +32,7 @@ Meteor.methods({
       username: Meteor.users.findOne(this.userId).username,
     });
   },
-  'tasklists.remove'(taskId) {
+  'checklists.remove'(taskId) {
     check(taskId, String);
 
     const task = TaskLists.findOne(taskId);
@@ -45,7 +45,7 @@ Meteor.methods({
     TaskLists.remove(taskId);
     //TODO remove the tasks also
   },
-  'tasklists.setPrivate'(taskId, setToPrivate){
+  'checklists.setPrivate'(taskId, setToPrivate){
     check(taskId, String);
     check(setToPrivate, Boolean);
     

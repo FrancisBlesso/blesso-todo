@@ -16,7 +16,7 @@ if (Meteor.isServer) {
         Tasks.remove({});
         taskId = Tasks.insert({
           text: 'test task',
-          tasklistId: "1",
+          checklistId: "1",
           createdAt: new Date(),
           ownerId: userId,
           username: 'tesstuser',
