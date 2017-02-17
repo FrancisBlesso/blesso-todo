@@ -2,11 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
-import {Grid, Row, Col, Panel, ListGroup, Checkbox} from 'react-bootstrap';
+import {Grid, Row, Checkbox} from 'react-bootstrap';
 
 import { Tasks } from '../api/tasks.js';
 
-import Task from './Task.jsx';
+import Checklist from './Checklist.jsx';
 import AccountsUIWrapper from './AccountsUIWrapper.jsx';
 
 // App component - represents the whole app
@@ -18,41 +18,9 @@ class App extends Component {
       hideCompleted: false,
     };
   }
-    
-  handleSubmit(event) {
-    event.preventDefault();
-    
-    // Find the text field via the React ref
-    const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
-    
-    //TODO use correct checklist id
-    Meteor.call('tasks.insert', text, "1");
-    
-    // Clear form
-    ReactDOM.findDOMNode(this.refs.textInput).value = '';
-  }
   toggleHideCompleted() {
     this.setState({
       hideCompleted: !this.state.hideCompleted,
-    });
-  }
-  renderTasks() {
-    let filteredTasks = this.props.tasks;
-    if (this.state.hideCompleted) {
-      filteredTasks = filteredTasks.filter(task => !task.checked);
-    }
-    return filteredTasks.map((task) => {
-        const currentUserId = this.props.currentUser && this.props.currentUser._id;
-        const showPrivateButton = task.ownerId === currentUserId;
-        const showDeleteButton = showPrivateButton;
-        return (
-          <Task 
-            key={task._id} 
-            task={task}
-            showPrivateButton = {showPrivateButton}
-            showDeleteButton = {showDeleteButton}
-          />
-        );
     });
   }
 
@@ -69,24 +37,17 @@ class App extends Component {
               Hide Completed Tasks
             </label>
             <AccountsUIWrapper />
-            { this.props.currentUser ? 
-    	  <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
-            <input
-              type="text"
-              ref="textInput"
-              placeholder="Type to add new tasks"
-              />
-          </form> : ''
-            }
-      </header>
+        </header>
         <Grid fluid="true">	    
-    	  <Row>
-    	    <Panel collapsible defaultExpanded header="First List">
-              <ListGroup fill>
-    	  {this.renderTasks()}
-    	      </ListGroup>
-    	    </Panel>
-    	  </Row>
+          <Row>
+            <Checklist 
+              tasks={this.props.tasks}
+              hideCompleted={this.state.hideCompleted}
+              checklistName="groceries"
+              checklistId="1"
+              currentUser = {this.props.currentUser}
+            />
+          </Row>
         </Grid>
       </div>
     );
