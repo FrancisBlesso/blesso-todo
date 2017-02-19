@@ -11,13 +11,6 @@ import Task from './Task.jsx';
 // A checklist contains a list of tasks to check off
 export default class Checklist extends Component {
     
-  constructor(props) {
-    super(props);
-    this.state = {
-      tasks: props.checklist.tasks.fetch()
-    };
-  }  
-    
   handleSubmit(event) {
     event.preventDefault();
       
@@ -31,11 +24,10 @@ export default class Checklist extends Component {
   }
   
   renderTasks() {
-    let filteredTasks = this.state.tasks;
-    if (this.props.hideCompleted) {
-      filteredTasks = filteredTasks.filter(task => !task.checked);
-    }
-    return filteredTasks.map((task) => {
+    return this.props.checklist.tasks.map((task) => {
+        if (this.props.hideCompleted && task.checked) {
+            return null;
+        }
         const currentUserId = this.props.currentUser && this.props.currentUser._id;
         const showPrivateButton = task.ownerId === currentUserId;
         const showDeleteButton = showPrivateButton;
@@ -51,7 +43,7 @@ export default class Checklist extends Component {
   }
 
   render () {
-    const incompleteCount = this.state.tasks.reduce(function (sum, task) {
+    const incompleteCount = this.props.checklist.tasks.fetch().reduce(function (sum, task) {
       if (!task.checked) {
         sum++;
       }
