@@ -29,7 +29,7 @@ export default class Task extends Component {
     return (
     <div className={taskClassName}>
       <ListGroupItem disabled={this.props.task.checked} >
-        <Checkbox inline="true"
+        <Checkbox inline={true}
           checked={this.props.task.checked}
           onClick={this.toggleChecked.bind(this)}
         />
