@@ -7,8 +7,7 @@ export const Tasks = new Mongo.Collection('tasks');
 
 Tasks.schema = new SimpleSchema({
   _id: {type: String},
-  checklistId: {type: String},
-  //checklistId: {type: String, regEx: SimpleSchema.RegEx.Id},
+  checklistId: {type: String, regEx: SimpleSchema.RegEx.Id},
   text: {type: String},
   checked: {type: Boolean, defaultValue: false},
   private: {type: Boolean, defaultValue: false},

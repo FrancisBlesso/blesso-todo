@@ -1,19 +1,32 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
+import SimpleSchema from 'simpl-schema';
 
-export const TaskLists = new Mongo.Collection('checklists');
+import {Tasks} from './tasks.js';
+
+export const Checklists = new Mongo.Collection('checklists', {
+  transform: function(checklist) {
+    checklist.tasks = Tasks.find({
+      checklistId: { $eq: checklist._id }
+    });
+    return checklist;
+  }
+});
+Checklists.schema = new SimpleSchema({
+  _id: {type: String},
+  name: {type: String},
+  ownerId: {type: String, regEx: SimpleSchema.RegEx.Id},
+  username: {type: String},
+  createdAt: {type: Date},
+});
+Checklists.attachSchema(Checklists.schema);
+
 
 if (Meteor.isServer)  {
-  // This code only runs on the server
-  // Only publish tasks that are public or belong to the current user
+  // TODO Only publish checklist that the user can see.  
   Meteor.publish('checklists', function tasksPublication() {
-    return TaskLists.find({
-//      $or: [
-//        { private: { $ne: true } },
-//        { owner: this.userId },
-//      ],
-    });
+    return Checklists.find();
   });
 }
 Meteor.methods({
@@ -25,37 +38,37 @@ Meteor.methods({
       throw new Meteor.Error('not-authorized');
     }
     
-    TaskLists.insert({
-      text,
+    Checklists.insert({
+      name: text,
       createdAt: new Date(),
-      owner: this.userId,
+      ownerId: this.userId,
       username: Meteor.users.findOne(this.userId).username,
     });
   },
   'checklists.remove'(taskId) {
     check(taskId, String);
 
-    const task = TaskLists.findOne(taskId);
+    const task = Checklists.findOne(taskId);
 
     if (task.owner !== this.userId) {
       // If the task is private, make sure only the owner can delete it
       throw new Meteor.Error('not-authorized');
     }
     
-    TaskLists.remove(taskId);
+    Checklists.remove(taskId);
     //TODO remove the tasks also
   },
   'checklists.setPrivate'(taskId, setToPrivate){
     check(taskId, String);
     check(setToPrivate, Boolean);
     
-    const task = TaskLists.findOne(taskId);
+    const task = Checklists.findOne(taskId);
     
     // Make sure only the task owner can make a task private
     if (task.owner !== this.userId) {
       throw new Meteor.Error('not-authorized');
     }
     
-    TaskLists.update(taskId, {$set: { private: setToPrivate}});
+    Checklists.update(taskId, {$set: { private: setToPrivate}});
   },
 });
